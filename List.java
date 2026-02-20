@@ -38,15 +38,18 @@ public class List {
     
     /** GIVE Textual representation of this list. */
     public String toString() {
-        ListIterator n = new ListIterator(first);
-        String str = "";
-        while(n.hasNext())
-            {
-             CharData temp = n.next();
-             str = str + temp.toString() + "\n";
-            }
-            
-        return str;
+    StringBuilder sb = new StringBuilder();
+    sb.append("(");
+    ListIterator it = new ListIterator(first);
+
+    while (it.hasNext()) {
+        CharData cd = it.next();
+        sb.append(cd.toString());
+        if (it.hasNext()) sb.append(" ");
+    }
+
+    sb.append(")");
+    return sb.toString();
     }
 
     /** Returns the index of the first CharData object in this list
