@@ -77,41 +77,44 @@ public class LanguageModel {
 	void calculateProbabilities(List probs) {				
 		if (probs == null || probs.getSize() == 0) return;
 
-        
-        int total = 0;
-        ListIterator it1 = new ListIterator(probs.listIterator(0).current);
-        while (it1.hasNext()) {
-            CharData cd = it1.next();
-            total += cd.count;
-        }
-        if (total == 0) return;
+    
+    int total = 0;
+    ListIterator it1 = probs.listIterator(0);
+    while (it1.hasNext()) {
+        total += it1.next().count;
+    }
+    if (total == 0) return;
 
-        
-        double runningCp = 0.0;
-        ListIterator it2 = new ListIterator(probs.listIterator(0).current);
-        while (it2.hasNext()) {
-            CharData cd = it2.next();
-            cd.p = ((double) cd.count) / total;
-            runningCp += cd.p;
-            cd.cp = runningCp;
-        }
+    
+    double runningCp = 0.0;
+    ListIterator it2 = probs.listIterator(0);
+    CharData last = null;
+
+    while (it2.hasNext()) {
+        CharData cd = it2.next();
+        cd.p = (double) cd.count / total;
+        runningCp += cd.p;
+        cd.cp = runningCp;
+        last = cd;
+    }
+
+    
+    if (last != null) last.cp = 1.0;
 	}
 
     
 	char getRandomChar(List probs) {
 		if (probs == null || probs.getSize() == 0) return ' ';
 
-        double r = randomGenerator.nextDouble(); 
-        ListIterator it = new ListIterator(probs.listIterator(0).current);
+        double r = randomGenerator.nextDouble();
+        ListIterator it = probs.listIterator(0);
 
         while (it.hasNext()) {
-            CharData cd = it.next();
-            if (cd.cp > r) {
-                return cd.chr;
-            }
-        }
+        CharData cd = it.next();
+        if (cd.cp > r) return cd.chr;
+         }   
 
-        
+    
         return probs.get(probs.getSize() - 1).chr;
 	}
 
@@ -123,23 +126,26 @@ public class LanguageModel {
 	 * @return the generated text
 	 */
 	public String generate(String initialText, int textLength) {
-		if (initialText == null) return "";
-        if (initialText.length() < windowLength) return initialText;
+    if (initialText == null) return "";
+    if (textLength <= initialText.length()) {
+        return initialText.substring(0, textLength);
+    }
+    if (initialText.length() < windowLength) return initialText;
 
-        StringBuilder generated = new StringBuilder(initialText);
+    StringBuilder generated = new StringBuilder(initialText);
 
-        while (generated.length() < textLength) {
-            String window = generated.substring(generated.length() - windowLength);
+    while (generated.length() < textLength) {
+        String window = generated.substring(generated.length() - windowLength);
 
-            List probs = CharDataMap.get(window);
-            if (probs == null) break; 
+        List probs = CharDataMap.get(window);
+        if (probs == null) break;
 
-            char next = getRandomChar(probs);
-            generated.append(next);
-        }
+        char next = getRandomChar(probs);
+        generated.append(next);
+    }
 
-        return generated.toString();
-	}
+    return generated.toString();
+    }   
 
     /** Returns a string representing the map of this language model. */
 	public String toString() {
