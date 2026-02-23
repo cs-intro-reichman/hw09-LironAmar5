@@ -95,17 +95,16 @@ public class LanguageModel {
 	char getRandomChar(List probs) {
 		if (probs == null || probs.getSize() == 0) return ' ';
 
-        double r = randomGenerator.nextDouble();
-        ListIterator it = probs.listIterator(0);
+    double r = randomGenerator.nextDouble();
+    ListIterator it = probs.listIterator(0);
 
-        while (it.hasNext()) {
+    while (it.hasNext()) {
         CharData cd = it.next();
-        if (cd.cp > r) return cd.chr;
-         }   
+        if (cd.cp >= r) return cd.chr;   
+    }
 
-    
-        return probs.get(probs.getSize() - 1).chr;
-	}
+    return probs.get(probs.getSize() - 1).chr;
+}
 
     /**
 	 * Generates a random text, based on the probabilities that were learned during training. 
