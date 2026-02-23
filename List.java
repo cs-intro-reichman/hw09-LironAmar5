@@ -40,8 +40,8 @@ public class List {
     public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("(");
-    ListIterator it = new ListIterator(first);
 
+    ListIterator it = new ListIterator(first);
     while (it.hasNext()) {
         CharData cd = it.next();
         sb.append(cd.toString());
@@ -57,39 +57,28 @@ public class List {
      *  or -1 if there is no such object in this list. */
     public int indexOf(char chr) {
         int index = 0;
-        ListIterator k = new ListIterator(first);
-        while(k.hasNext())
-            {
-                CharData temp = k.next();
-                if(temp.equals(chr))
-                    {
-                        return index;
-                    }
-                    index++;
-            }
-        return -1;
+    ListIterator it = new ListIterator(first);
+    while (it.hasNext()) {
+        CharData cd = it.next();
+        if (cd.chr == chr) return index;
+        index++;
+    }
+    return -1;
     }
 
     /** If the given character exists in one of the CharData objects in this list,
      *  increments its counter. Otherwise, adds a new CharData object with the
      *  given chr to the beginning of this list. */
     public void update(char chr) {
-        if(this.indexOf(chr) < 0)
-            {
-                this.addFirst(chr);
-            }
-        else 
-            {
-                ListIterator lst = new ListIterator(first);
-                while(lst.hasNext())
-                    {
-                        if(lst.current.cp.equals(chr))
-                            {
-                                lst.current.cp.count++;
-                            }
-                            lst.next();
-                    }
-            }    
+       ListIterator it = new ListIterator(first);
+    while (it.hasNext()) {
+        CharData cd = it.next();
+        if (cd.chr == chr) {
+            cd.count++;
+            return;
+        }
+    }
+    addFirst(chr);
         
     }
 
